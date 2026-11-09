@@ -7,14 +7,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [2.0.1] - 2026-11-09
 
 ### Added
-- **Interactive HTML Visualization (`scripts/visualization.py`)**: New standalone module generating rich, interactive HTML reports with Chart.js visualizations.
-  - Executive dashboard with animated trend warning badge (GREEN/AMBER/RED)
-  - Risk matrix table with sortable columns and color-coded posture badges
-  - Three interactive charts: Regime Payoffs (bar), Asymmetry Map (scatter), Monte Carlo Robustness (horizontal bar with P10/P50/P90)
-  - Learning roadmap timeline with phase markers
-  - Dark/light theme toggle with localStorage persistence
-  - Responsive design (mobile-first, print-friendly)
-  - Keyboard-accessible collapsible sections for Pre-Mortem and Crucible Gate details
+- **Interactive HTML Visualization (`scripts/visualization.py`)**: New standalone module generating clean, accessible HTML reports with Chart.js visualizations designed for universal readability.
+  - Clear verdict badge (GREEN/AMBER/RED) with plain-language meaning
+  - Key metrics cards: Expected Value, EVPI, Skill Half-Life, Durability Score
+  - Three intuitive charts: Payoffs by Scenario (bar), Risk vs Reward (scatter), Forecast Uncertainty (range bars)
+  - Options comparison table with plain-language recommendations
+  - Monte Carlo simulation results table
+  - Key insights boxes: Missing Data Impact, Survivorship Bias, Hidden Factors
+  - 3-phase learning roadmap with time estimates and concrete checkpoints
+  - Crucible Gate: First-principles test + hands-on drill
+  - Auto dark/light theme (follows system preference), responsive, print-friendly
 - **CLI Integration**: Added `--html` argument to `risk_and_trend_analyzer.py` for generating HTML reports alongside JSON output and Matplotlib charts.
 - **Zero-Dependency Architecture**: HTML reports use Chart.js via CDN — no additional Python packages required.
 

@@ -153,12 +153,18 @@ python3 scripts/risk_and_trend_analyzer.py --json '{
 ```
 
 The HTML report includes:
-- **Executive Dashboard**: Animated trend badge, key metrics cards
-- **Interactive Charts**: Regime payoffs (bar), Asymmetry map (scatter), Monte Carlo ranges (P10/P50/P90)
-- **Risk Matrix**: Sortable table with color-coded posture badges
-- **Learning Roadmap**: Timeline with phase markers
-- **Dark/Light Theme**: Persisted preference, auto-detects system theme
-- **Print-Friendly**: Clean PDF output via browser print
+- **Clear Verdict Badge**: GREEN (Master Deeply) / AMBER (Tactical 80/20) / RED (Pivot Away) — instantly understandable
+- **Key Metrics Cards**: Expected Value, Value of Missing Data (EVPI), Skill Half-Life, Durability Score
+- **Three Intuitive Charts**: 
+  - Payoffs by Scenario (bar) — how each option does in best/expected/worst/extreme cases
+  - Risk vs Reward (scatter) — right = safer, higher = better
+  - Forecast Uncertainty (range bars) — likely outcome ranges from 1,000 simulations
+- **Options Table**: Plain-language comparison with clear recommendations
+- **Simulation Results**: Win rates, ruin risk, pessimistic/median/optimistic ranges
+- **Key Insights**: Missing data impact, survivorship bias warning, hidden factors
+- **3-Phase Learning Path**: Foundations → Core Skills → Production Mastery with time estimates
+- **Crucible Gate**: First-principles test + hands-on verification drill
+- **Auto Dark/Light Theme** (follows system), responsive, print-to-PDF friendly
 
 ### Run Built-In Self-Tests
 

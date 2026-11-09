@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Mastermind HTML Visualization Generator
+Mastermind HTML Visualization Generator - Simplified v2.0.1
 Version: 2.0.1
 License: MIT
 
-Generates interactive HTML reports from Mastermind analysis results.
-Uses Chart.js for interactive visualizations (loaded via CDN).
+Generates clean, accessible HTML reports from Mastermind analysis results.
+Focus on clarity, simplicity, and universal readability.
 """
 
 import json
@@ -15,7 +15,7 @@ from datetime import datetime
 from string import Template
 
 
-# HTML Template with embedded CSS and Chart.js
+# Simplified HTML Template - Clean, Accessible, User-Friendly
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,909 +25,459 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
         :root {
-            --bg-primary: #F8FAFC;
-            --bg-secondary: #FFFFFF;
-            --bg-card: #FFFFFF;
-            --text-primary: #0F172A;
-            --text-secondary: #475569;
-            --text-muted: #94A3B8;
-            --border-color: #E2E8F0;
-            --accent-blue: #1E3A8A;
-            --accent-teal: #0D9488;
-            --accent-amber: #D97706;
-            --accent-red: #DC2626;
-            --accent-green: #16A34A;
-            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-            --radius: 8px;
-            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-            --font-sans: system-ui, -apple-system, sans-serif;
+            --bg: #fafafa;
+            --card: #ffffff;
+            --text: #1a1a2e;
+            --text-muted: #555;
+            --border: #e0e0e0;
+            --primary: #2563eb;
+            --success: #16a34a;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --shadow: 0 2px 8px rgba(0,0,0,0.06);
+            --radius: 10px;
         }
 
-        [data-theme="dark"] {
-            --bg-primary: #0F172A;
-            --bg-secondary: #1E293B;
-            --bg-card: #1E293B;
-            --text-primary: #F1F5F9;
-            --text-secondary: #CBD5E1;
-            --text-muted: #64748B;
-            --border-color: #334155;
-            --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #141423;
+                --card: #1e1e30;
+                --text: #f0f0f5;
+                --text-muted: #aaa;
+                --border: #333;
+                --shadow: 0 2px 8px rgba(0,0,0,0.3);
+            }
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: var(--font-sans);
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
             line-height: 1.6;
-            transition: background 0.3s, color 0.3s;
-        }
-
-        .container {
-            max-width: 1400px;
+            padding: 20px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 24px;
         }
 
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 32px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid var(--border-color);
-            flex-wrap: wrap;
-            gap: 16px;
-        }
+        h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 4px; }
+        h2 { font-size: 1.3rem; font-weight: 600; margin: 24px 0 12px; padding-bottom: 6px; border-bottom: 2px solid var(--border); }
+        h3 { font-size: 1.1rem; font-weight: 600; margin: 16px 0 8px; }
 
-        .header h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
+        p { color: var(--text-muted); margin-bottom: 12px; }
 
-        .header .meta {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-
-        .theme-toggle {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            padding: 8px 16px;
-            cursor: pointer;
-            font-size: 0.875rem;
-            color: var(--text-primary);
-            transition: all 0.2s;
-        }
-
-        .theme-toggle:hover {
-            background: var(--bg-card);
-            border-color: var(--accent-blue);
-        }
+        .meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; }
 
         /* Badge */
-        .badge-container {
-            margin-bottom: 32px;
-        }
-
-        .badge {
+        .verdict-badge {
             display: inline-flex;
             align-items: center;
-            gap: 12px;
-            padding: 16px 24px;
+            gap: 10px;
+            padding: 14px 20px;
             border-radius: var(--radius);
             font-weight: 600;
             font-size: 1rem;
-            animation: pulse 2s ease-in-out infinite;
+            margin-bottom: 24px;
+            border: 2px solid;
         }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.85; }
+        .verdict-badge.green { background: #f0fdf4; color: #166534; border-color: #16a34a; }
+        .verdict-badge.amber { background: #fffbeb; color: #92400e; border-color: #d97706; }
+        .verdict-badge.red { background: #fef2f2; color: #991b1b; border-color: #dc2626; }
+        @media (prefers-color-scheme: dark) {
+            .verdict-badge.green { background: #14532d; color: #86efac; border-color: #22c55e; }
+            .verdict-badge.amber { background: #78350f; color: #fde047; border-color: #f59e0b; }
+            .verdict-badge.red { background: #7f1d1d; color: #fca5a5; border-color: #ef4444; }
         }
+        .badge-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
 
-        .badge.GREEN { background: #DCFCE7; color: #166534; border: 2px solid #16A34A; }
-        .badge.AMBER { background: #FEF3C7; color: #92400E; border: 2px solid #D97706; }
-        .badge.RED { background: #FEE2E2; color: #991B1B; border: 2px solid #DC2626; }
-        .badge.UNSPECIFIED { background: #F1F5F9; color: #475569; border: 2px solid #94A3B8; }
-
-        [data-theme="dark"] .badge.GREEN { background: #14532D; color: #86EFAC; border-color: #22C55E; }
-        [data-theme="dark"] .badge.AMBER { background: #78350F; color: #FDE047; border-color: #F59E0B; }
-        [data-theme="dark"] .badge.RED { background: #7F1D1D; color: #FCA5A5; border-color: #EF4444; }
-        [data-theme="dark"] .badge.UNSPECIFIED { background: #334155; color: #94A3B8; border-color: #64748B; }
-
-        .badge-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        /* Grid Layout */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
+        /* Card Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
         .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
+            background: var(--card);
+            border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 24px;
-            box-shadow: var(--shadow-sm);
-            transition: box-shadow 0.2s;
+            padding: 20px;
+            box-shadow: var(--shadow);
         }
 
-        .card:hover { box-shadow: var(--shadow-md); }
-
-        .card h2 {
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .card h2::before {
-            content: "";
-            width: 4px;
-            height: 20px;
-            background: var(--accent-blue);
-            border-radius: 2px;
-        }
-
-        /* Metrics Cards */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 16px;
-        }
-
-        .metric {
-            text-align: center;
-            padding: 16px;
-            background: var(--bg-secondary);
-            border-radius: var(--radius);
-            border: 1px solid var(--border-color);
-        }
-
-        .metric-value {
-            font-size: 2rem;
-            font-weight: 700;
-            font-family: var(--font-mono);
-            line-height: 1.2;
-        }
-
-        .metric-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-top: 4px;
-        }
-
-        .metric.GREEN .metric-value { color: #16A34A; }
-        .metric.AMBER .metric-value { color: #D97706; }
-        .metric.RED .metric-value { color: #DC2626; }
+        .metric { text-align: center; }
+        .metric-value { font-size: 2rem; font-weight: 700; font-family: monospace; line-height: 1.2; }
+        .metric-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+        .metric.good .metric-value { color: var(--success); }
+        .metric.warning .metric-value { color: var(--warning); }
+        .metric.bad .metric-value { color: var(--danger); }
 
         /* Charts */
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
+        .chart-card { grid-column: 1 / -1; }
+        .chart-wrap { position: relative; height: 280px; }
 
-        .chart-wrapper {
-            grid-column: 1 / -1;
-        }
+        /* Table */
+        .table-wrap { overflow-x: auto; margin-top: 12px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: var(--bg); font-weight: 600; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        tr:hover td { background: var(--bg); }
 
-        /* Tables */
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.875rem;
-        }
-
-        th, td {
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        th {
-            background: var(--bg-secondary);
-            font-weight: 600;
-            color: var(--text-secondary);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            position: sticky;
-            top: 0;
-        }
-
-        tr:hover td { background: var(--bg-secondary); }
-
-        .posture-badge {
+        .posture {
             display: inline-block;
             padding: 4px 10px;
-            border-radius: 9999px;
-            font-size: 0.7rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+        }
+        .posture-go { background: #dcfce7; color: #166534; }
+        .posture-probe { background: #fef3c7; color: #92400e; }
+        .posture-avoid { background: #fee2e2; color: #991b1b; }
+        @media (prefers-color-scheme: dark) {
+            .posture-go { background: #14532d; color: #86efac; }
+            .posture-probe { background: #78350f; color: #fde047; }
+            .posture-avoid { background: #7f1d1d; color: #fca5a5; }
         }
 
-        .posture-GO { background: #DCFCE7; color: #166534; }
-        .posture-PROBE { background: #FEF3C7; color: #92400E; }
-        .posture-REJECT { background: #FEE2E2; color: #991B1B; }
-        .posture-AVOID { background: #F1F5F9; color: #475569; }
+        /* Insight Boxes */
+        .insight {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin: 12px 0;
+        }
+        .insight-title { font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+        .insight.warning { border-left-color: var(--warning); }
+        .insight.danger { border-left-color: var(--danger); }
+        .insight.success { border-left-color: var(--success); }
 
-        [data-theme="dark"] .posture-GO { background: #14532D; color: #86EFAC; }
-        [data-theme="dark"] .posture-PROBE { background: #78350F; color: #FDE047; }
-        [data-theme="dark"] .posture-REJECT { background: #7F1D1D; color: #FCA5A5; }
-        [data-theme="dark"] .posture-AVOID { background: #334155; color: #94A3B8; }
-
-        /* Roadmap Timeline */
-        .timeline {
+        /* Roadmap */
+        .phase {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin: 12px 0;
             position: relative;
-            padding-left: 24px;
+            padding-left: 48px;
         }
-
-        .timeline::before {
+        .phase::before {
             content: "";
             position: absolute;
-            left: 8px;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: var(--border-color);
-        }
-
-        .timeline-item {
-            position: relative;
-            padding-bottom: 32px;
-        }
-
-        .timeline-item:last-child { padding-bottom: 0; }
-
-        .timeline-marker {
-            position: absolute;
-            left: -20px;
-            top: 4px;
+            left: 16px;
+            top: 16px;
             width: 16px;
             height: 16px;
             border-radius: 50%;
-            border: 3px solid var(--bg-card);
-            z-index: 1;
+            border: 3px solid var(--card);
         }
+        .phase.phase1::before { background: var(--success); }
+        .phase.phase2::before { background: var(--warning); }
+        .phase.phase3::before { background: var(--danger); }
 
-        .timeline-marker.GREEN { background: #16A34A; }
-        .timeline-marker.AMBER { background: #D97706; }
-        .timeline-marker.RED { background: #DC2626; }
+        .phase-title { font-weight: 600; margin-bottom: 4px; }
+        .phase-time { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; }
+        .phase-focus { color: var(--text-muted); font-size: 0.9rem; }
 
-        .timeline-content {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            padding: 16px;
-        }
-
-        .timeline-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .timeline-title {
-            font-weight: 600;
-            font-size: 1rem;
-        }
-
-        .timeline-duration {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            background: var(--bg-primary);
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
-
-        .timeline-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
-            font-size: 0.875rem;
-        }
-
-        .detail-item {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .detail-label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .detail-value { color: var(--text-primary); }
-
-        /* Shadow Data & EVPI */
-        .shadow-item {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-
-        .shadow-item h4 {
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .shadow-item h4::before {
-            content: "";
-            width: 8px;
-            height: 8px;
-            border-radius: 2px;
-        }
-
-        .shadow-survivorship h4::before { background: #DC2626; }
-        .shadow-confounders h4::before { background: #D97706; }
-        .shadow-evpi h4::before { background: #0D9488; }
-
-        /* Legend */
-        .legend {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.875rem;
-        }
-
-        .legend-color {
-            width: 16px;
-            height: 16px;
-            border-radius: 4px;
-        }
+        /* Simple List */
+        .simple-list { margin-left: 20px; margin-top: 8px; }
+        .simple-list li { margin: 6px 0; color: var(--text-muted); }
 
         /* Footer */
-        .footer {
-            margin-top: 48px;
-            padding-top: 24px;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.875rem;
-        }
+        footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 0.85rem; }
 
-        .footer a { color: var(--accent-blue); }
-
-        /* Collapsible Sections */
-        .collapsible {
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .collapsible-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-        }
-
-        .collapsible[aria-expanded="true"] .collapsible-content {
-            max-height: 2000px;
-            transition: max-height 0.5s ease-in;
-        }
-
-        .collapsible-toggle {
-            display: inline-block;
-            transition: transform 0.2s;
-        }
-
-        .collapsible[aria-expanded="true"] .collapsible-toggle {
-            transform: rotate(90deg);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .container { padding: 16px; }
-            .header { flex-direction: column; align-items: flex-start; }
-            .grid { grid-template-columns: 1fr; }
-            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-            .chart-container { height: 250px; }
-            .timeline { padding-left: 16px; }
-        }
-
-        /* Print Styles */
+        /* Print */
         @media print {
-            .theme-toggle { display: none; }
-            .card { break-inside: avoid; page-break-inside: avoid; }
-            body { background: white; color: black; }
-            .badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            body { background: white; color: black; padding: 0; }
+            .card { box-shadow: none; border: 1px solid #ccc; }
+            .verdict-badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 16px; }
+            h1 { font-size: 1.5rem; }
+            .grid { grid-template-columns: 1fr; }
+            .chart-wrap { height: 240px; }
+            .phase { padding-left: 36px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div>
-                <h1>${title}</h1>
-                <div class="meta">Generated: ${timestamp} | Mastermind v2.0.1</div>
-            </div>
-            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                <span id="theme-icon">🌙</span> <span id="theme-text">Dark</span>
-            </button>
-        </header>
+    <header>
+        <h1>${title}</h1>
+        <p class="meta">Generated ${timestamp} • Mastermind v2.0.1</p>
+    </header>
 
-        <!-- Trend Badge -->
-        <div class="badge-container">
-            <div class="badge ${badge_class}">
-                <span class="badge-icon" style="background: ${badge_color};"></span>
-                <span>${badge_text}</span>
-            </div>
-        </div>
-
-        <!-- Executive Metrics -->
-        <div class="grid">
-            <div class="card">
-                <h2>Key Metrics</h2>
-                <div class="metrics-grid">
-                    <div class="metric ${ev_class}">
-                        <div class="metric-value">${best_ev}</div>
-                        <div class="metric-label">Best EV</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">${evpi}</div>
-                        <div class="metric-label">EVPI</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">${half_life}</div>
-                        <div class="metric-label">Half-Life (yrs)</div>
-                    </div>
-                    <div class="metric ${durability_class}">
-                        <div class="metric-value">${durability}</div>
-                        <div class="metric-label">Durability</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>Trend Analysis</h2>
-                <div class="metrics-grid">
-                    <div class="metric">
-                        <div class="metric-value">${lindy_years}</div>
-                        <div class="metric-label">Lindy Years</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">${hype_index}</div>
-                        <div class="metric-label">Hype Index</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">${prod_adoption}</div>
-                        <div class="metric-label">Prod Adoption</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">${auto_vuln}</div>
-                        <div class="metric-label">Auto Vuln.</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Charts Row -->
-        <div class="grid">
-            <div class="card chart-wrapper">
-                <h2>Regime Payoffs</h2>
-                <div class="chart-container">
-                    <canvas id="payoffChart"></canvas>
-                </div>
-            </div>
-
-            <div class="card chart-wrapper">
-                <h2>Asymmetry Map (EV vs Tail Risk)</h2>
-                <div class="chart-container">
-                    <canvas id="asymmetryChart"></canvas>
-                </div>
-            </div>
-
-            <div class="card chart-wrapper">
-                <h2>Monte Carlo Robustness</h2>
-                <div class="chart-container">
-                    <canvas id="monteCarloChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Risk Matrix Table -->
-        <div class="card">
-            <h2>Strategic Options Risk Matrix</h2>
-            <div class="table-container">
-                <table id="riskTable">
-                    <thead>
-                        <tr>
-                            <th>Option</th>
-                            <th>Bull Payoff</th>
-                            <th>Base Payoff</th>
-                            <th>Bear (-40%)</th>
-                            <th>Tail Shock</th>
-                            <th>EV</th>
-                            <th>Convexity</th>
-                            <th>Door Type</th>
-                            <th>Posture</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${risk_table_rows}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Monte Carlo Details -->
-        <div class="grid">
-            <div class="card">
-                <h2>Monte Carlo Stress Test Results</h2>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Option</th>
-                                <th>Win Rate</th>
-                                <th>Tail Ruin Risk</th>
-                                <th>P10 (Pessimistic)</th>
-                                <th>P50 (Median)</th>
-                                <th>P90 (Optimistic)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${mc_table_rows}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>Missing Data & EVPI</h2>
-                <div class="shadow-item shadow-evpi">
-                    <h4>Expected Value of Perfect Information</h4>
-                    <p><strong>EVPI:</strong> ${evpi}</p>
-                    <p><strong>Directive:</strong> ${evpi_directive}</p>
-                </div>
-                <div class="shadow-item shadow-survivorship">
-                    <h4>Survivorship Bias (Unobserved Graveyard)</h4>
-                    <p>${survivorship_bias}</p>
-                </div>
-                <div class="shadow-item shadow-confounders">
-                    <h4>Omitted Confounders</h4>
-                    <p>${omitted_confounders}</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Learning Roadmap -->
-        <div class="card">
-            <h2>Zero-Cost 80/20 Mastery Roadmap</h2>
-            <div class="timeline">
-                ${roadmap_timeline}
-            </div>
-        </div>
-
-        <!-- Pre-Mortem & Consequences -->
-        <div class="grid">
-            <div class="card collapsible" onclick="toggleCollapse(this)" aria-expanded="false">
-                <h2 class="collapsible-header">
-                    <span class="collapsible-toggle">▶</span> Pre-Mortem & Consequence Horizon
-                </h2>
-                <div class="collapsible-content">
-                    <div class="shadow-item">
-                        <h4>Top Failure Modes & Mitigations</h4>
-                        <p>${failure_modes}</p>
-                    </div>
-                    <div class="shadow-item">
-                        <h4>1st / 2nd / 3rd-Order Consequences</h4>
-                        <p>${consequences}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card collapsible" onclick="toggleCollapse(this)" aria-expanded="false">
-                <h2 class="collapsible-header">
-                    <span class="collapsible-toggle">▶</span> Crucible Gate #1
-                </h2>
-                <div class="collapsible-content">
-                    <div class="shadow-item">
-                        <h4>First-Principles Defense Question</h4>
-                        <p>${defense_question}</p>
-                    </div>
-                    <div class="shadow-item">
-                        <h4>Hands-On Build / Diagnostic Drill</h4>
-                        <p>${diagnostic_drill}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <p>Generated by <strong>Mastermind v2.0.1</strong> — Rational Strategic Decision Engine</p>
-            <p>MIT Licensed | <a href="https://github.com/mastermind-skill" target="_blank">Source Code</a> | <a href="#" onclick="window.print()">Print Report</a></p>
-        </footer>
+    <!-- Main Verdict -->
+    <div class="verdict-badge ${badge_class}">
+        <span class="badge-dot" style="background: ${badge_color};"></span>
+        <span>${badge_text}</span>
     </div>
 
+    <p>${directive}</p>
+
+    <!-- Key Metrics -->
+    <div class="grid">
+        <div class="card metric ${ev_class}">
+            <div class="metric-value">${best_ev}</div>
+            <div class="metric-label">Best Expected Value</div>
+        </div>
+        <div class="card metric">
+            <div class="metric-value">${evpi}</div>
+            <div class="metric-label">Value of Perfect Info (EVPI)</div>
+        </div>
+        <div class="card metric">
+            <div class="metric-value">${half_life}</div>
+            <div class="metric-label">Skill Half-Life (years)</div>
+        </div>
+        <div class="card metric ${durability_class}">
+            <div class="metric-value">${durability}</div>
+            <div class="metric-label">Durability Score</div>
+        </div>
+    </div>
+
+    <!-- Trend Context -->
+    <div class="grid">
+        <div class="card">
+            <h3>Trend Context</h3>
+            <p><strong>Lindy Age:</strong> ${lindy_years} years</p>
+            <p><strong>Hype Level:</strong> ${hype_index}/100</p>
+            <p><strong>Production Adoption:</strong> ${prod_adoption}/100</p>
+            <p><strong>Automation Risk:</strong> ${auto_vuln}/100</p>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="grid">
+        <div class="card chart-card">
+            <h2>Payoffs by Scenario</h2>
+            <div class="chart-wrap"><canvas id="payoffChart"></canvas></div>
+            <p style="margin-top: 8px; font-size: 0.85rem;">Shows how each option performs under four scenarios: Best case (Bull), Expected (Base), 40% forecast error (Bear), and Extreme shock (Tail).</p>
+        </div>
+
+        <div class="card chart-card">
+            <h2>Risk vs Reward</h2>
+            <div class="chart-wrap"><canvas id="asymmetryChart"></canvas></div>
+            <p style="margin-top: 8px; font-size: 0.85rem;">Each dot is an option. Right = safer (less downside). Higher = better expected value. Ideal options are top-right.</p>
+        </div>
+
+        <div class="card chart-card">
+            <h2>Forecast Uncertainty</h2>
+            <div class="chart-wrap"><canvas id="monteCarloChart"></canvas></div>
+            <p style="margin-top: 8px; font-size: 0.85rem;">After 1,000 simulations with noisy forecasts. Bars show likely range (P10-P90). Dot = median.</p>
+        </div>
+    </div>
+
+    <!-- Options Comparison -->
+    <h2>Options at a Glance</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Option</th>
+                    <th>Bull</th>
+                    <th>Base</th>
+                    <th>Bear</th>
+                    <th>Tail</th>
+                    <th>EV</th>
+                    <th>Convexity</th>
+                    <th>Reversibility</th>
+                    <th>Recommendation</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${risk_table_rows}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Monte Carlo Details -->
+    <h2>Simulation Results</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Option</th>
+                    <th>Win Rate</th>
+                    <th>Ruin Risk</th>
+                    <th>Pessimistic (P10)</th>
+                    <th>Median (P50)</th>
+                    <th>Optimistic (P90)</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${mc_table_rows}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Key Insights -->
+    <h2>What You Should Know</h2>
+
+    <div class="insight ${evpi_class}">
+        <div class="insight-title">📊 Missing Data Impact: ${evpi_label}</div>
+        <p>${evpi_directive}</p>
+    </div>
+
+    <div class="insight warning">
+        <div class="insight-title">⚠️ Survivorship Bias</div>
+        <p>${survivorship_bias}</p>
+    </div>
+
+    <div class="insight warning">
+        <div class="insight-title">🔍 Hidden Factors</div>
+        <p>${omitted_confounders}</p>
+    </div>
+
+    <!-- Learning Roadmap -->
+    <h2>Suggested Learning Path</h2>
+
+    <div class="phase phase1">
+        <div class="phase-title">Phase 1: Foundations</div>
+        <div class="phase-time">~20-40 hours</div>
+        <div class="phase-focus">Core concepts & mental models</div>
+        <ul class="simple-list">
+            <li>Read official specifications & documentation (Tier 1A)</li>
+            <li>Build mental models before writing code</li>
+            <li>Complete: Explain the core idea in plain language</li>
+        </ul>
+    </div>
+
+    <div class="phase phase2">
+        <div class="phase-title">Phase 2: Core Skills</div>
+        <div class="phase-time">~40-80 hours</div>
+        <div class="phase-focus">Applied procedures & edge cases</div>
+        <ul class="simple-list">
+            <li>Follow open university courses & peer-reviewed papers (Tier 1B)</li>
+            <li>Practice the 20% of skills used 80% of the time</li>
+            <li>Complete: Build a working mini-project</li>
+        </ul>
+    </div>
+
+    <div class="phase phase3">
+        <div class="phase-title">Phase 3: Production Mastery</div>
+        <div class="phase-time">~80-160 hours</div>
+        <div class="phase-focus">Integration, stress testing, real-world constraints</div>
+        <ul class="simple-list">
+            <li>Use open-source textbooks & interactive sandboxes (Tier 1C)</li>
+            <li>Handle failures, scale, and maintenance</li>
+            <li>Complete: Ship something real or pass verification gate</li>
+        </ul>
+    </div>
+
+    <!-- Crucible Gate -->
+    <h2>Your First Checkpoint</h2>
+
+    <div class="insight">
+        <div class="insight-title">🧠 First-Principles Test</div>
+        <p>${defense_question}</p>
+    </div>
+
+    <div class="insight success">
+        <div class="insight-title">🛠️ Hands-On Drill</div>
+        <p>${diagnostic_drill}</p>
+    </div>
+
+    <footer>
+        <p>Generated by <strong>Mastermind v2.0.1</strong> — Rational Decision Engine</p>
+        <p>MIT Licensed • <a href="#" onclick="window.print()">Print / Save as PDF</a></p>
+    </footer>
+
     <script>
-        // Data injection
+        // Chart Data
         const chartData = ${chart_data_json};
 
-        // Theme Management
-        function toggleTheme() {
-            const html = document.documentElement;
-            const icon = document.getElementById('theme-icon');
-            const text = document.getElementById('theme-text');
-
-            if (html.getAttribute('data-theme') === 'dark') {
-                html.removeAttribute('data-theme');
-                icon.textContent = '🌙';
-                text.textContent = 'Dark';
-                localStorage.setItem('theme', 'light');
-            } else {
-                html.setAttribute('data-theme', 'dark');
-                icon.textContent = '☀️';
-                text.textContent = 'Light';
-                localStorage.setItem('theme', 'dark');
-            }
-
-            // Re-render charts with new colors
-            renderAllCharts();
-        }
-
-        // Load saved theme
-        if (localStorage.getItem('theme') === 'dark' ||
-            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            document.getElementById('theme-icon').textContent = '☀️';
-            document.getElementById('theme-text').textContent = 'Light';
-        }
-
-        // Collapsible Sections
-        function toggleCollapse(element) {
-            const expanded = element.getAttribute('aria-expanded') === 'true';
-            element.setAttribute('aria-expanded', !expanded);
-        }
-
-        // Chart Colors (theme-aware)
-        function getChartColors() {
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        // Theme-aware colors
+        function getColors() {
+            const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             return {
-                gridColor: isDark ? '#334155' : '#E2E8F0',
-                textColor: isDark ? '#CBD5E1' : '#475569',
-                accentBlue: '#1E3A8A',
-                accentTeal: '#0D9488',
-                accentAmber: '#D97706',
-                accentRed: '#DC2626',
-                accentGreen: '#16A34A',
-                bgColor: isDark ? '#1E293B' : '#FFFFFF'
+                grid: dark ? '#333' : '#e0e0e0',
+                text: dark ? '#aaa' : '#555',
+                primary: '#2563eb',
+                success: '#16a34a',
+                warning: '#d97706',
+                danger: '#dc2626',
+                bg: dark ? '#1e1e30' : '#ffffff'
             };
         }
 
-        // Chart Instances
-        let payoffChart = null;
-        let asymmetryChart = null;
-        let monteCarloChart = null;
+        let charts = {};
 
-        function renderAllCharts() {
-            const colors = getChartColors();
+        function renderCharts() {
+            const c = getColors();
 
-            // Destroy existing
-            if (payoffChart) payoffChart.destroy();
-            if (asymmetryChart) asymmetryChart.destroy();
-            if (monteCarloChart) monteCarloChart.destroy();
+            // Destroy old
+            Object.values(charts).forEach(ch => ch.destroy());
 
-            // Chart 1: Payoffs by Regime
-            payoffChart = new Chart(
-                document.getElementById('payoffChart'),
-                {
-                    type: 'bar',
-                    data: {
-                        labels: ['Bull', 'Base', 'Bear (-40%)', 'Tail Shock'],
-                        datasets: chartData.payoffs.map((p, i) => ({
-                            label: `$${p.name} (EV: $${p.ev})`,
-                            data: p.values,
-                            backgroundColor: [
-                                colors.accentBlue,
-                                colors.accentTeal,
-                                colors.accentAmber,
-                                colors.accentRed
-                            ][i % 4] + 'CC',
-                            borderColor: [
-                                colors.accentBlue,
-                                colors.accentTeal,
-                                colors.accentAmber,
-                                colors.accentRed
-                            ][i % 4],
-                            borderWidth: 1
-                        }))
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'bottom', labels: { color: colors.textColor, font: { size: 10 } } },
-                            title: { display: false }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: { color: colors.gridColor },
-                                ticks: { color: colors.textColor }
-                            },
-                            x: {
-                                grid: { color: colors.gridColor },
-                                ticks: { color: colors.textColor }
-                            }
-                        }
+            // 1. Payoffs Bar Chart
+            charts.payoff = new Chart(document.getElementById('payoffChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Bull', 'Base', 'Bear (-40%)', 'Tail Shock'],
+                    datasets: chartData.payoffs.map((p, i) => ({
+                        label: '$${p.name} (EV: $${p.ev})',
+                        data: p.values,
+                        backgroundColor: [c.primary, c.success, c.warning, c.danger][i % 4] + 'CC',
+                        borderColor: [c.primary, c.success, c.warning, c.danger][i % 4],
+                        borderWidth: 1
+                    }))
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { color: c.text, font: { size: 10 } } } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: c.grid }, ticks: { color: c.text } },
+                        x: { grid: { color: c.grid }, ticks: { color: c.text } }
                     }
                 }
-            );
+            });
 
-            // Chart 2: Asymmetry Map
-            asymmetryChart = new Chart(
-                document.getElementById('asymmetryChart'),
-                {
-                    type: 'scatter',
-                    data: {
-                        datasets: [{
-                            label: 'Options',
-                            data: chartData.asymmetry.map(a => ({
-                                x: a.tail,
-                                y: a.ev,
-                                option: a.name
-                            })),
-                            backgroundColor: chartData.asymmetry.map((a, i) => [
-                                colors.accentBlue,
-                                colors.accentTeal,
-                                colors.accentAmber,
-                                colors.accentRed
-                            ][i % 4]),
-                            borderColor: '#0F172A',
-                            borderWidth: 2,
-                            pointRadius: 8,
-                            pointHoverRadius: 10
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                callbacks: {
-                                    label: ctx => `$${ctx.raw.option}: EV=$${ctx.raw.y}, Tail=$${ctx.raw.x}`
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                title: { display: true, text: 'Worst-Case Tail Consequence (Right = Safer)', color: colors.textColor },
-                                grid: { color: colors.gridColor },
-                                ticks: { color: colors.textColor }
-                            },
-                            y: {
-                                title: { display: true, text: 'Expected Value (EV)', color: colors.textColor },
-                                grid: { color: colors.gridColor },
-                                ticks: { color: colors.textColor }
-                            }
-                        }
+            // 2. Risk vs Reward Scatter
+            charts.asymmetry = new Chart(document.getElementById('asymmetryChart'), {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Options',
+                        data: chartData.asymmetry.map(a => ({ x: a.tail, y: a.ev, option: a.name })),
+                        backgroundColor: chartData.asymmetry.map((_, i) => [c.primary, c.success, c.warning, c.danger][i % 4]),
+                        borderColor: '#1a1a2e', borderWidth: 2,
+                        pointRadius: 8, pointHoverRadius: 10
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => '$${ctx.raw.option}: EV $${ctx.raw.y}, Risk $${ctx.raw.x}' } } },
+                    scales: {
+                        x: { title: { display: true, text: 'Worst-Case Downside (Right = Safer)', color: c.text }, grid: { color: c.grid }, ticks: { color: c.text } },
+                        y: { title: { display: true, text: 'Expected Value (Higher = Better)', color: c.text }, grid: { color: c.grid }, ticks: { color: c.text } }
                     }
                 }
-            );
+            });
 
-            // Chart 3: Monte Carlo
-            monteCarloChart = new Chart(
-                document.getElementById('monteCarloChart'),
-                {
-                    type: 'bar',
-                    data: {
-                        labels: chartData.monteCarlo.map(m => m.name),
-                        datasets: [
-                            {
-                                label: 'P10 (Pessimistic)',
-                                data: chartData.monteCarlo.map(m => m.p10),
-                                backgroundColor: colors.accentRed + '80',
-                                borderColor: colors.accentRed,
-                                borderWidth: 1
-                            },
-                            {
-                                label: 'P50 (Median)',
-                                data: chartData.monteCarlo.map(m => m.p50),
-                                backgroundColor: colors.accentBlue + '80',
-                                borderColor: colors.accentBlue,
-                                borderWidth: 1
-                            },
-                            {
-                                label: 'P90 (Optimistic)',
-                                data: chartData.monteCarlo.map(m => m.p90),
-                                backgroundColor: colors.accentGreen + '80',
-                                borderColor: colors.accentGreen,
-                                borderWidth: 1
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        indexAxis: 'y',
-                        plugins: {
-                            legend: { position: 'bottom', labels: { color: colors.textColor, font: { size: 10 } } }
-                        },
-                        scales: {
-                            x: {
-                                grid: { color: colors.gridColor },
-                                ticks: { color: colors.textColor }
-                            },
-                            y: {
-                                grid: { color: colors.gridColor },
-                                ticks: { color: colors.textColor }
-                            }
-                        }
-                    }
+            // 3. Monte Carlo Horizontal Bar
+            charts.monte = new Chart(document.getElementById('monteCarloChart'), {
+                type: 'bar',
+                data: {
+                    labels: chartData.monteCarlo.map(m => m.name),
+                    datasets: [
+                        { label: 'P10 (Pessimistic)', data: chartData.monteCarlo.map(m => m.p10), backgroundColor: c.danger + '80', borderColor: c.danger, borderWidth: 1 },
+                        { label: 'P50 (Median)', data: chartData.monteCarlo.map(m => m.p50), backgroundColor: c.primary + '80', borderColor: c.primary, borderWidth: 1 },
+                        { label: 'P90 (Optimistic)', data: chartData.monteCarlo.map(m => m.p90), backgroundColor: c.success + '80', borderColor: c.success, borderWidth: 1 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+                    plugins: { legend: { position: 'bottom', labels: { color: c.text, font: { size: 10 } } } },
+                    scales: { x: { grid: { color: c.grid }, ticks: { color: c.text } }, y: { grid: { color: c.grid }, ticks: { color: c.text } } }
                 }
-            );
+            });
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            renderAllCharts();
+        // Re-render on theme change
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', renderCharts);
 
-            // Keyboard navigation for collapsibles
-            document.querySelectorAll('.collapsible').forEach(el => {
-                el.addEventListener('keydown', e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        toggleCollapse(el);
-                    }
-                });
-            });
-        });
-
-        // Handle theme change for charts
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        mediaQuery.addEventListener('change', () => {
-            if (!localStorage.getItem('theme')) {
-                renderAllCharts();
-            }
-        });
+        // Init
+        document.addEventListener('DOMContentLoaded', renderCharts);
     </script>
 </body>
 </html>"""
@@ -935,42 +485,37 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
 def generate_html_report(
     summary: Dict[str, Any],
-    title: str = "Mastermind Epistemic Risk & Trend Forensics Audit",
+    title: str = "Mastermind Decision Audit",
     output_path: str = "mastermind_report.html"
 ) -> str:
     """
-    Generate an interactive HTML report from the Mastermind analysis summary.
+    Generate a clean, accessible HTML report from Mastermind analysis.
 
     Args:
-        summary: The analysis summary from analyze_options()
+        summary: Analysis summary from analyze_options()
         title: Report title
-        output_path: Path to save the HTML file
+        output_path: Output file path
 
     Returns:
-        Path to the generated HTML file
+        Path to generated HTML file
     """
 
-    # Extract data from summary
+    # Extract data
     trend = summary.get("trend_warning_radar", {})
     options = summary.get("options_analysis", {})
-    scenarios = summary.get("scenarios", ["Bull Regime", "Base Regime", "Bear (Forecast Off 40%+)", "Tail Shock"])
 
-    # Badge info
+    # Badge
     badge = trend.get("badge", "UNSPECIFIED")
     if "GREEN" in badge:
-        badge_class = "GREEN"
-        badge_color = "#16A34A"
+        badge_class, badge_color, badge_text = "green", "#16a34a", "GREEN — Master Deeply"
     elif "AMBER" in badge:
-        badge_class = "AMBER"
-        badge_color = "#D97706"
+        badge_class, badge_color, badge_text = "amber", "#d97706", "AMBER — Tactical 80/20 Only"
     elif "RED" in badge:
-        badge_class = "RED"
-        badge_color = "#DC2626"
+        badge_class, badge_color, badge_text = "red", "#dc2626", "RED — Pivot Away"
     else:
-        badge_class = "UNSPECIFIED"
-        badge_color = "#94A3B8"
+        badge_class, badge_color, badge_text = "", "#999", "Unspecified"
 
-    # Metrics
+    # Key metrics
     best_ev = summary.get("best_ev_under_uncertainty", 0)
     evpi = summary.get("evpi_missing_data_value", 0)
     half_life = trend.get("estimated_half_life_years", "N/A")
@@ -982,20 +527,19 @@ def generate_html_report(
     prod_adoption = metrics.get("production_adoption_score", "N/A")
     auto_vuln = metrics.get("automation_vulnerability", "N/A")
 
-    # Determine metric classes
-    ev_class = "GREEN" if best_ev > 0 else "RED" if best_ev < 0 else ""
-    durability_class = "GREEN" if isinstance(durability, (int, float)) and durability >= 65 else "AMBER" if isinstance(durability, (int, float)) and durability >= 40 else "RED"
+    ev_class = "good" if best_ev > 0 else "bad" if best_ev < 0 else ""
+    durability_class = "good" if isinstance(durability, (int, float)) and durability >= 65 else "warning" if isinstance(durability, (int, float)) and durability >= 40 else "bad"
 
-    # Build risk table rows
+    directive = trend.get("strategic_directive", "No directive available.")
+
+    # Build tables
     risk_table_rows = ""
+    mc_table_rows = ""
     chart_payoffs = []
     chart_asymmetry = []
-    chart_monte_carlo = []
+    chart_monte = []
 
-    colors = ["#1E3A8A", "#0D9488", "#D97706", "#DC2626"]
-
-    for idx, (name, data) in enumerate(options.items()):
-        probs = data.get("probabilities", [0,0,0,0])
+    for name, data in options.items():
         payoffs = data.get("payoffs", [0,0,0,0])
         ev = data.get("expected_value", 0)
         convexity = data.get("convexity_ratio", "N/A")
@@ -1003,54 +547,24 @@ def generate_html_report(
         posture = data.get("recommended_posture", "N/A")
         max_downside = data.get("max_downside", 0)
 
-        # Posture class for badge
-        posture_class = ""
-        if "GO" in posture and "HIGH" in posture:
-            posture_class = "posture-GO"
-        elif "PROBE" in posture:
-            posture_class = "posture-PROBE"
-        elif "REJECT" in posture or "HEDGE" in posture:
-            posture_class = "posture-REJECT"
-        elif "AVOID" in posture:
-            posture_class = "posture-AVOID"
+        # Posture badge class
+        posture_cls = "posture-probe"
+        if "GO - HIGH" in posture: posture_cls = "posture-go"
+        elif "AVOID" in posture: posture_cls = "posture-avoid"
 
         risk_table_rows += f"""
         <tr>
             <td><strong>{html.escape(name)}</strong></td>
-            <td>{payoffs[0]:.1f}</td>
-            <td>{payoffs[1]:.1f}</td>
-            <td>{payoffs[2]:.1f}</td>
-            <td>{payoffs[3]:.1f}</td>
+            <td>{payoffs[0]:.0f}</td>
+            <td>{payoffs[1]:.0f}</td>
+            <td>{payoffs[2]:.0f}</td>
+            <td>{payoffs[3]:.0f}</td>
             <td><strong>{ev:.1f}</strong></td>
-            <td>{convexity if isinstance(convexity, str) else f"{convexity:.2f}"}</td>
+            <td>{convexity if isinstance(convexity, str) else f"{convexity:.1f}"}</td>
             <td>{html.escape(door)}</td>
-            <td><span class="posture-badge {posture_class}">{html.escape(posture.split()[0])}</span></td>
+            <td><span class="posture {posture_cls}">{html.escape(posture.split("(")[0].strip())}</span></td>
         </tr>"""
 
-        # Chart data
-        chart_payoffs.append({
-            "name": name,
-            "values": payoffs,
-            "ev": ev
-        })
-
-        chart_asymmetry.append({
-            "name": name,
-            "ev": ev,
-            "tail": max_downside
-        })
-
-        mc = data.get("monte_carlo_stress_test", {})
-        chart_monte_carlo.append({
-            "name": name,
-            "p10": mc.get("ev_p10_pessimistic", 0),
-            "p50": mc.get("ev_p50_median", 0),
-            "p90": mc.get("ev_p90_optimistic", 0)
-        })
-
-    # Monte Carlo table rows
-    mc_table_rows = ""
-    for name, data in options.items():
         mc = data.get("monte_carlo_stress_test", {})
         mc_table_rows += f"""
         <tr>
@@ -1062,92 +576,40 @@ def generate_html_report(
             <td>{mc.get('ev_p90_optimistic', 0):.1f}</td>
         </tr>"""
 
-    # Shadow data
-    survivorship_bias = "Historical attrition rates and silent dropouts not visible in success stories. Winners' narratives omit the graveyard of failed attempts with identical starting conditions."
-    omitted_confounders = "Prerequisites (capital, network, prior domain expertise), timing luck, and survivorship selection effects often masquerade as skill in retrospective analyses."
-    evpi_directive = summary.get("missing_data_directive", "No directive available.")
+        chart_payoffs.append({"name": name, "values": payoffs, "ev": ev})
+        chart_asymmetry.append({"name": name, "ev": ev, "tail": max_downside})
+        chart_monte.append({
+            "name": name,
+            "p10": mc.get("ev_p10_pessimistic", 0),
+            "p50": mc.get("ev_p50_median", 0),
+            "p90": mc.get("ev_p90_optimistic", 0)
+        })
 
-    # Roadmap (placeholder - in real usage, this would come from Stage 4)
-    roadmap_timeline = """
-    <div class="timeline-item">
-        <div class="timeline-marker GREEN"></div>
-        <div class="timeline-content">
-            <div class="timeline-header">
-                <span class="timeline-title">Phase 1: Foundations</span>
-                <span class="timeline-duration">20-40 hrs</span>
-            </div>
-            <div class="timeline-details">
-                <div class="detail-item">
-                    <span class="detail-label">Focus</span>
-                    <span class="detail-value">Core Concepts & Mental Models</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Sources</span>
-                    <span class="detail-value">Tier 1A Official Specs/Docs</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="timeline-item">
-        <div class="timeline-marker AMBER"></div>
-        <div class="timeline-content">
-            <div class="timeline-header">
-                <span class="timeline-title">Phase 2: Core Execution</span>
-                <span class="timeline-duration">40-80 hrs</span>
-            </div>
-            <div class="timeline-details">
-                <div class="detail-item">
-                    <span class="detail-label">Focus</span>
-                    <span class="detail-value">Applied Procedures & Edge Cases</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Sources</span>
-                    <span class="detail-value">Tier 1B OCW & Papers</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="timeline-item">
-        <div class="timeline-marker RED"></div>
-        <div class="timeline-content">
-            <div class="timeline-header">
-                <span class="timeline-title">Phase 3: Production Mastery</span>
-                <span class="timeline-duration">80-160 hrs</span>
-            </div>
-            <div class="timeline-details">
-                <div class="detail-item">
-                    <span class="detail-label">Focus</span>
-                    <span class="detail-value">System Integration & Stress Testing</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Sources</span>
-                    <span class="detail-value">Tier 1C Open Textbooks/Sandboxes</span>
-                </div>
-            </div>
-        </div>
-    </div>"""
+    # Insights
+    evpi_val = summary.get("evpi_missing_data_value", 0)
+    if evpi_val >= 5:
+        evpi_class, evpi_label = "danger", "HIGH — Missing Data Could Change Decision"
+    else:
+        evpi_class, evpi_label = "success", "LOW — Current Data Sufficient"
+    evpi_directive = summary.get("missing_data_directive", "")
 
-    # Pre-mortem placeholders
-    failure_modes = "1. Underestimating prerequisite knowledge gap — Mitigation: Diagnostic pre-assessment before Phase 1. 2. Resource depletion before verification gate — Mitigation: Time-box each phase with hard stop criteria."
-    consequences = "Immediate: Time/capital loss. 2nd-order: Opportunity cost of alternative skills. 3rd-order: Career trajectory divergence if hype trap not identified."
-    defense_question = "Explain the core mechanism of [skill] from first principles without using any domain-specific jargon or buzzwords."
-    diagnostic_drill = "Build a minimal working artifact demonstrating the 20% of [skill] that delivers 80% of value. Must pass automated verification test."
+    survivorship_bias = "Success stories hide the many who tried and failed. The visible winners often had hidden advantages (capital, network, timing, prior expertise) that aren't obvious in retrospect."
+    omitted_confounders = "What looks like skill may be luck + prerequisites. Always ask: what did the winners have that the silent failures didn't?"
 
-    # Prepare chart data JSON
-    chart_data = {
-        "payoffs": chart_payoffs,
-        "asymmetry": chart_asymmetry,
-        "monteCarlo": chart_monte_carlo
-    }
+    defense_question = "Explain the core mechanism of this skill from first principles — no jargon, no buzzwords."
+    diagnostic_drill = "Build the smallest thing that proves you understand the 20% that delivers 80% of the value. Must work without tutorials."
 
-    # Render template
+    chart_data = {"payoffs": chart_payoffs, "asymmetry": chart_asymmetry, "monteCarlo": chart_monte}
+
+    # Render
     template = Template(HTML_TEMPLATE)
     html_content = template.substitute(
         title=html.escape(title),
-        timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        timestamp=datetime.now().strftime("%Y-%m-%d %H:%M"),
         badge_class=badge_class,
         badge_color=badge_color,
-        badge_text=html.escape(badge),
+        badge_text=html.escape(badge_text),
+        directive=html.escape(directive),
         best_ev=f"{best_ev:.1f}",
         evpi=f"{evpi:.1f}",
         half_life=str(half_life),
@@ -1160,84 +622,40 @@ def generate_html_report(
         durability_class=durability_class,
         risk_table_rows=risk_table_rows,
         mc_table_rows=mc_table_rows,
+        evpi_class=evpi_class,
+        evpi_label=evpi_label,
+        evpi_directive=html.escape(evpi_directive),
         survivorship_bias=html.escape(survivorship_bias),
         omitted_confounders=html.escape(omitted_confounders),
-        evpi_directive=html.escape(evpi_directive),
-        roadmap_timeline=roadmap_timeline,
-        failure_modes=html.escape(failure_modes),
-        consequences=html.escape(consequences),
         defense_question=html.escape(defense_question),
         diagnostic_drill=html.escape(diagnostic_drill),
         chart_data_json=json.dumps(chart_data)
     )
 
-    # Write to file
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
 
     return output_path
 
 
-# For direct testing
 if __name__ == "__main__":
-    import sys
-
-    # Test with sample data
-    test_summary = {
-        "scenarios": ["Bull Regime", "Base Regime", "Bear (Forecast Off 40%+)", "Tail Shock"],
+    # Quick test
+    test = {
+        "scenarios": ["Bull", "Base", "Bear", "Tail"],
         "trend_warning_radar": {
             "badge": "GREEN: MASTER DEEPLY",
-            "composite_durability_score": 72.5,
-            "estimated_half_life_years": 12.3,
-            "metrics_input": {
-                "lindy_years": 11,
-                "hype_inflation_index": 35,
-                "production_adoption_score": 82,
-                "automation_vulnerability": 20
-            },
-            "strategic_directive": "High structural durability and asymmetric career leverage."
+            "composite_durability_score": 75,
+            "estimated_half_life_years": 10,
+            "metrics_input": {"lindy_years": 12, "hype_inflation_index": 30, "production_adoption_score": 85, "automation_vulnerability": 20},
+            "strategic_directive": "High durability, invest deeply."
         },
         "options_analysis": {
-            "Master Deeply": {
-                "probabilities": [0.35, 0.40, 0.15, 0.10],
-                "payoffs": [90, 55, 10, -20],
-                "expected_value": 48.25,
-                "max_upside": 90,
-                "max_downside": -20,
-                "convexity_ratio": 4.5,
-                "door_classification": "Type 2 (Reversible / Capped Downside)",
-                "recommended_posture": "GO - HIGH CONVEXITY (Asymmetric Upside)",
-                "monte_carlo_stress_test": {
-                    "optimal_win_rate_pct": 68.5,
-                    "tail_ruin_exposure_pct": 2.1,
-                    "ev_p10_pessimistic": 32.1,
-                    "ev_p50_median": 47.8,
-                    "ev_p90_optimistic": 65.4
-                }
-            },
-            "Tactical 80/20 Probe": {
-                "probabilities": [0.35, 0.40, 0.15, 0.10],
-                "payoffs": [65, 45, 20, -5],
-                "expected_value": 41.75,
-                "max_upside": 65,
-                "max_downside": -5,
-                "convexity_ratio": 13.0,
-                "door_classification": "Type 2 (Reversible / Capped Downside)",
-                "recommended_posture": "GO - HIGH CONVEXITY (Asymmetric Upside)",
-                "monte_carlo_stress_test": {
-                    "optimal_win_rate_pct": 31.5,
-                    "tail_ruin_exposure_pct": 0.0,
-                    "ev_p10_pessimistic": 28.4,
-                    "ev_p50_median": 41.2,
-                    "ev_p90_optimistic": 55.8
-                }
-            }
+            "Full Commit": {"probabilities": [0.3,0.4,0.2,0.1], "payoffs": [90,55,10,-20], "expected_value": 45, "max_upside": 90, "max_downside": -20, "convexity_ratio": 4.5, "door_classification": "Type 2", "recommended_posture": "GO - HIGH CONVEXITY (Asymmetric Upside)", "monte_carlo_stress_test": {"optimal_win_rate_pct": 70, "tail_ruin_exposure_pct": 2, "ev_p10_pessimistic": 30, "ev_p50_median": 45, "ev_p90_optimistic": 60}},
+            "Probe Only": {"probabilities": [0.3,0.4,0.2,0.1], "payoffs": [60,40,15,-5], "expected_value": 35, "max_upside": 60, "max_downside": -5, "convexity_ratio": 12, "door_classification": "Type 2", "recommended_posture": "GO - HIGH CONVEXITY (Asymmetric Upside)", "monte_carlo_stress_test": {"optimal_win_rate_pct": 30, "tail_ruin_exposure_pct": 0, "ev_p10_pessimistic": 25, "ev_p50_median": 35, "ev_p90_optimistic": 45}}
         },
-        "best_ev_under_uncertainty": 48.25,
-        "ev_with_perfect_information": 55.2,
-        "evpi_missing_data_value": 6.95,
-        "missing_data_directive": "HIGH EVPI: Missing data can flip this decision. Run a 24-72h micro-experiment before full commitment."
+        "best_ev_under_uncertainty": 45,
+        "evpi_missing_data_value": 4,
+        "missing_data_directive": "LOW EVPI: Proceed with top option."
     }
-
-    output = generate_html_report(test_summary, "Test Mastermind Report", "test_report.html")
-    print(f"Generated: {output}")
+    generate_html_report(test, "Test Report", "test_simple.html")
+    print("Generated test_simple.html")
