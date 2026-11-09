@@ -4,6 +4,25 @@ All notable changes to the **Mastermind (`mastermind`)** skill package are docum
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2026-11-09
+
+### Added
+- **Interactive HTML Visualization (`scripts/visualization.py`)**: New standalone module generating rich, interactive HTML reports with Chart.js visualizations.
+  - Executive dashboard with animated trend warning badge (GREEN/AMBER/RED)
+  - Risk matrix table with sortable columns and color-coded posture badges
+  - Three interactive charts: Regime Payoffs (bar), Asymmetry Map (scatter), Monte Carlo Robustness (horizontal bar with P10/P50/P90)
+  - Learning roadmap timeline with phase markers
+  - Dark/light theme toggle with localStorage persistence
+  - Responsive design (mobile-first, print-friendly)
+  - Keyboard-accessible collapsible sections for Pre-Mortem and Crucible Gate details
+- **CLI Integration**: Added `--html` argument to `risk_and_trend_analyzer.py` for generating HTML reports alongside JSON output and Matplotlib charts.
+- **Zero-Dependency Architecture**: HTML reports use Chart.js via CDN — no additional Python packages required.
+
+### Changed
+- Updated `scripts/risk_and_trend_analyzer.py` version to 2.0.1
+- Enhanced main() to accept `--html` flag and integrate with visualization module
+- Maintained full backward compatibility — all existing JSON output and Matplotlib charts work unchanged
+
 ## [2.0.0] - 2026-11-09
 
 ### Added

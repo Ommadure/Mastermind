@@ -1,6 +1,6 @@
 ---
 name: mastermind
-description: Act as a rational strategic mastermind, epistemic risk analyst, trend forecaster, and zero-cost universal skill mentor. Use when the user asks to learn or master any skill or technology free of cost, evaluate whether a skill or technology is worth mastering based on market trends and analytic charts, make high-stakes decisions under uncertainty, audit known vs. missing data (survivorship bias and EVPI), weigh asymmetric consequences and prediction errors, or build a deliberate practice roadmap using verified primary sources.
+description: Act as a rational strategic mastermind, epistemic risk analyst, trend forecaster, and zero-cost universal skill mentor. Use when the user asks to learn or master any skill or technology free of cost, evaluate whether a skill or technology is worth mastering based on market trends and analytic charts, make high-stakes decisions under uncertainty, audit known vs. missing data (survivorship bias and EVPI), weigh asymmetric consequences and prediction errors, or build a deliberate practice roadmap using verified primary sources. **v2.0.1 adds interactive HTML visualization reports with Chart.js charts, trend badges, risk matrices, and learning roadmaps.**
 ---
 
 # Mastermind
@@ -8,6 +8,8 @@ description: Act as a rational strategic mastermind, epistemic risk analyst, tre
 An open-source (MIT Licensed), production-grade cognitive engine for strategic decision-making under uncertainty, quantitative trend and chart forensics, and zero-cost universal skill mastery.
 
 Mastermind eliminates sycophancy, wishful thinking, and "What You See Is All There Is" (WYSIATI) bias. Before teaching any skill or endorsing any path, it audits what data is missing from visible metrics, evaluates how severely prediction errors affect the user's downside, issues an explicit trend and obsolescence warning, and routes exclusively to 100% free, Tier-1 primary learning sources.
+
+**New in v2.0.1**: Interactive HTML visualization reports with executive dashboard, animated trend warning badges, interactive Chart.js visualizations, risk matrices, Monte Carlo robustness charts, and learning roadmap timelines. Dark/light theme, mobile-responsive, print-friendly.
 
 ## Package Architecture
 
@@ -19,7 +21,8 @@ Load the relevant reference or script from this skill directory based on the act
 - `references/deliberate-practice-pedagogy.md`: Scott Young's Ultralearning deconstruction (Concepts, Facts, Procedures) combined with K. Anders Ericsson's Deliberate Practice and Crucible Gatekeeping protocols.
 - `assets/decision-and-mastery-report-template.md`: Standardized output blueprint for full Mastermind Decision Audits and Zero-Cost Mastery Roadmaps.
 - `examples/sample-mastermind-walkthroughs.md`: End-to-end worked examples demonstrating GREEN (Master Deeply), AMBER (Tactical 80/20 Probe), and RED (Hype Trap Pivot) verdicts.
-- `scripts/risk_and_trend_analyzer.py`: Executable Python CLI for computing Expected Value (EV), EVPI (missing-data cost), Monte Carlo forecast error sensitivity, Convexity Ratios, and 3-panel Matplotlib diagnostic charts.
+- `scripts/risk_and_trend_analyzer.py`: Executable Python CLI for computing Expected Value (EV), EVPI (missing-data cost), Monte Carlo forecast error sensitivity, Convexity Ratios, 3-panel Matplotlib diagnostic charts, and **interactive HTML visualization reports (v2.0.1+)**.
+- `scripts/visualization.py`: Standalone HTML report generator using Chart.js for interactive visualizations (v2.0.1+).
 - `README.md` and `LICENSE`: Full user/contributor documentation and MIT License terms.
 
 ## When to Use

@@ -2,6 +2,23 @@
 
 Use this structure when delivering a comprehensive Mastermind evaluation and learning roadmap. Adapt the depth to match the complexity of the user's request.
 
+## 0. Interactive HTML Visualization (v2.0.1+)
+
+For enhanced understanding and stakeholder communication, generate an interactive HTML report:
+```bash
+python3 scripts/risk_and_trend_analyzer.py --json '<payload>' --html report.html
+```
+
+The HTML report includes:
+- **Executive Dashboard**: Animated trend badge, key metrics cards
+- **Interactive Charts**: Regime payoffs (bar), Asymmetry map (scatter), Monte Carlo ranges (P10/P50/P90)
+- **Risk Matrix**: Sortable table with color-coded posture badges
+- **Learning Roadmap**: Timeline with phase markers
+- **Dark/Light Theme**: Persisted preference, auto-detects system theme
+- **Print-Friendly**: Clean PDF output via browser print
+
+---
+
 ## 1. Executive Verdict & Trend Warning Badge
 
 * **Target Skill / Decision**: `<Name of Skill, Technology, or Strategic Decision>`

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Mastermind Quantitative Epistemic Risk, EVPI, Monte Carlo & Trend Forensics Engine
-Version: 2.0.0
+Version: 2.0.1
 License: MIT
 
 Capabilities:
@@ -12,7 +12,8 @@ Capabilities:
 4. Automated Trend & Obsolescence Warning Radar (`GREEN`, `AMBER`, `RED`) from Lindy age,
    hype inflation, production adoption, and automation vulnerability metrics.
 5. 3-Panel Publication-Grade Matplotlib Diagnostic Chart generation.
-6. Built-in `--selftest` unit test suite for deterministic verification.
+6. Interactive HTML Visualization Report with Chart.js (v2.0.1+).
+7. Built-in `--selftest` unit test suite for deterministic verification.
 """
 
 import argparse
@@ -30,6 +31,15 @@ try:
     HAS_MPL = True
 except ImportError:
     HAS_MPL = False
+
+# Import visualization module (v2.0.1+)
+try:
+    from visualization import generate_html_report
+    HAS_VIZ = True
+except ImportError:
+    HAS_VIZ = False
+    def generate_html_report(*args, **kwargs):
+        raise RuntimeError("Visualization module not available. Ensure visualization.py is in the same directory.")
 
 
 SCENARIO_NAMES = [
@@ -418,6 +428,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Mastermind Epistemic Risk & Trend Analyzer")
     parser.add_argument("--json", type=str, help="JSON payload with options, skill_metrics, and parameters")
     parser.add_argument("--selftest", action="store_true", help="Run built-in unit tests")
+    parser.add_argument("--html", type=str, help="Output path for interactive HTML visualization report (v2.0.1+)")
     args = parser.parse_args()
 
     if args.selftest:
@@ -434,12 +445,21 @@ def main() -> None:
     ruin_threshold = float(payload.get("ruin_threshold", -35.0))
     skill_metrics = payload.get("skill_metrics")
     output_chart = payload.get("output_chart")
+    output_html = args.html or payload.get("output_html")
     title = payload.get("title", "Mastermind Epistemic Risk & Trend Forensics Audit")
 
     summary = analyze_options(options, ruin_threshold=ruin_threshold, skill_metrics=skill_metrics)
+
     if output_chart:
         plot_decision_chart(summary, output_chart, title=title)
         summary["chart_saved_to"] = output_chart
+
+    if output_html:
+        if HAS_VIZ:
+            html_path = generate_html_report(summary, title=title, output_path=output_html)
+            summary["html_report_saved_to"] = html_path
+        else:
+            print("Warning: Visualization module not available. Skipping HTML report.", file=sys.stderr)
 
     print(json.dumps(summary, indent=2))
 

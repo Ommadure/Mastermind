@@ -1,8 +1,9 @@
-# Mastermind (`mastermind`) — v2.0.0
+# Mastermind (`mastermind`) — v2.0.1
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Spec: Agent Skill](https://img.shields.io/badge/Skill_Format-Multi--File_v2.0-emerald.svg)](./SKILL.md)
 [![Cost: 100% Free Resources](https://img.shields.io/badge/Pedagogy-100%25_Free_Tier--1_Sources-teal.svg)](./references/zero-cost-tier1-sources.md)
+[![Visualization: Interactive HTML](https://img.shields.io/badge/Visualization-Interactive_HTML_Report-orange.svg)](./scripts/visualization.py)
 
 **Mastermind** is an open-source, MIT-licensed AI Agent Skill designed for **rational decision-making under deep uncertainty**, **quantitative trend and chart forensics**, and **universal zero-cost skill acquisition**.
 
@@ -12,6 +13,8 @@ Most AI assistants fail at strategic mentorship for three reasons:
 3. **Conflating Forecast Probability with Consequence Asymmetry**: They rely on fragile point-estimate predictions about the future instead of evaluating how badly a 40% forecast error hurts the user.
 
 **Mastermind** replaces passive agreement with a rigorous, 5-stage epistemic and pedagogical engine.
+
+**New in v2.0.1**: Interactive HTML visualization reports with Chart.js — executive dashboard, animated trend badges, risk matrices, Monte Carlo charts, and learning roadmaps. Dark/light theme, mobile-responsive, print-friendly.
 
 ## Table of Contents
 
@@ -111,7 +114,7 @@ Mastermind synthesizes eight peer-reviewed and field-tested frameworks into a si
 
 ## Quantitative Risk & Trend Analyzer CLI (`scripts/risk_and_trend_analyzer.py`)
 
-The bundled Python tool eliminates hand-wavy risk assessments by computing deterministic decision metrics, Monte Carlo forecast-error simulations, and a 3-panel visual diagnostic chart.
+The bundled Python tool eliminates hand-wavy risk assessments by computing deterministic decision metrics, Monte Carlo forecast-error simulations, a 3-panel visual diagnostic chart, and **interactive HTML visualization reports** (v2.0.1+).
 
 ### Command-Line Usage
 
@@ -130,9 +133,32 @@ python3 scripts/risk_and_trend_analyzer.py --json '{
     "automation_vulnerability": 20
   },
   "ruin_threshold": -30,
-  "output_chart": "rust_mastermind_audit.png"
+  "output_chart": "rust_mastermind_audit.png",
+  "output_html": "rust_mastermind_report.html"
 }'
 ```
+
+### Generate Interactive HTML Report (v2.0.1+)
+
+```bash
+# Via CLI flag (recommended)
+python3 scripts/risk_and_trend_analyzer.py --json '<payload>' --html report.html
+
+# Or via JSON payload
+python3 scripts/risk_and_trend_analyzer.py --json '{
+  "options": {...},
+  "skill_metrics": {...},
+  "output_html": "report.html"
+}'
+```
+
+The HTML report includes:
+- **Executive Dashboard**: Animated trend badge, key metrics cards
+- **Interactive Charts**: Regime payoffs (bar), Asymmetry map (scatter), Monte Carlo ranges (P10/P50/P90)
+- **Risk Matrix**: Sortable table with color-coded posture badges
+- **Learning Roadmap**: Timeline with phase markers
+- **Dark/Light Theme**: Persisted preference, auto-detects system theme
+- **Print-Friendly**: Clean PDF output via browser print
 
 ### Run Built-In Self-Tests
 
